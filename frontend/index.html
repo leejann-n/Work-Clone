@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="ko" class="booting auth-pending">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WorkClone · 업무 자동화 플랫폼</title>
+  <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/run.css" />
+  <link rel="stylesheet" href="css/build.css" />
+  <link rel="stylesheet" href="css/login.css" />
+  <script defer src="js/icons.js"></script>
+  <script defer src="js/common.js"></script>
+  <script defer src="js/auth.js"></script>
+  <script defer src="js/app.js"></script>
+  <script defer src="js/run.js"></script>
+  <script defer src="js/build.js"></script>
+  <script defer src="js/my.js"></script>
+  <script defer src="js/features.js"></script>
+  <style>
+    /* 아이콘·글꼴이 준비되기 전 화면이 바뀌며 깜빡이지 않도록 잠깐 숨김 (app.js가 해제) */
+    html.booting body { opacity: 0; }
+    body { transition: opacity .15s ease; }
+    /* 서버 응답을 기다리는 동안 빈 화면 대신 안내 (auth.js가 auth-pending을 지우면 사라짐) */
+    #boot-wait { display: none; }
+    html.auth-pending #boot-wait { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 14px; background: #f4fbf8; color: #3d4a56; font: 15px/1.6 Pretendard, system-ui, sans-serif; text-align: center; }
+    html.auth-pending.booting body { opacity: 1; }
+    #boot-wait .bw-spin { width: 34px; height: 34px; border: 3px solid #cfe9dd; border-top-color: #12805a; border-radius: 50%; animation: bwspin 0.9s linear infinite; }
+    #boot-wait small { color: #7a8794; font-size: 13px; }
+    @keyframes bwspin { to { transform: rotate(360deg); } }
+  </style>
+  <script>setTimeout(function () { document.documentElement.classList.remove('booting'); }, 2500);</script>
+</head>
+<body>
+<div id="boot-wait" role="status"><div class="bw-spin"></div><b>WorkClone을 불러오는 중…</b><small id="boot-wait-msg">잠시만 기다려 주세요.</small></div>
+<!--
+  아이콘: <i data-icon="이름" data-size="크기"></i> 를 js/app.js 가 SVG로 바꿉니다.
+  사용 가능한 이름은 js/icons.js 참고. data-fill / data-stroke 로 채우기·선 색을 지정할 수 있습니다.
+  화면의 숫자·목록은 예시 데이터입니다.
+-->
+<!-- ───────── 로그인 화면 ───────── -->
+<div class="login-screen" id="login" hidden>
+  <div class="login-wrap">
+    <section class="login-intro">
+      <div class="brand lg">
+        <div class="brand-logo">W</div>
+        <div>
+          <div class="brand-name">WorkClone</div>
+          <div class="brand-sub">업무 자동화 플랫폼</div>
+        </div>
+      </div>
+
+      <div class="li-main">
+        <div class="li-text">
+          <span class="pill"><i data-icon="sparkles" data-size="14"></i> 기업 업무 자동화 AI</span>
+          <h1>한 번만 일하세요. <br /><span class="accent">다음부터는 AI가 대신합니다.</span></h1>
+          <p>반복되는 업무는 AI가 대신 처리하고, <br />직원은 더 중요한 업무에 집중할 수 있습니다.</p>
+        </div>
+        <div class="li-art" aria-hidden="true"></div>
+      </div>
+
+      <div class="li-features">
+        <div class="lf-card">
+          <i data-icon="zap" data-size="30" data-fill="currentColor" class="lf-ic"></i>
+          <div><strong>업무 자동화</strong><span>엑셀, 문서, 메일 등 반복 업무를 <br />AI가 자동으로 처리</span></div>
+        </div>
+        <div class="lf-card">
+          <i data-icon="layers" data-size="30" class="lf-ic"></i>
+          <div><strong>업무 지식 학습</strong><span>우리 회사의 업무 방식과 <br />자료를 학습해 맞춤형으로 수행</span></div>
+        </div>
+        <div class="lf-card">
+          <i data-icon="users" data-size="30" class="lf-ic"></i>
+          <div><strong>전사 업무 지원</strong><span>기획, 인사, 재무, 영업 등 <br />모든 부서에서 활용 가능</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="login-side">
+      <form class="login-card" id="login-form" autocomplete="on">
+        <div class="brand lc-brand">
+          <div class="brand-logo">W</div>
+          <div>
+            <div class="brand-name">WorkClone</div>
+            <div class="brand-sub">업무 자동화 플랫폼</div>
+          </div>
+        </div>
+        <h2>로그인</h2>
+        <p class="login-sub">사번과 비밀번호를 입력해 주세요.</p>
+        <label class="login-input">
+          <i data-icon="user-round" data-size="20"></i>
+          <input id="login-id" name="username" inputmode="numeric" autocomplete="username" placeholder="사번" aria-label="사번" required />
+        </label>
+        <label class="login-input">
+          <i data-icon="lock" data-size="20"></i>
+          <input id="login-pw" name="password" type="password" autocomplete="current-password" placeholder="비밀번호" aria-label="비밀번호" required />
+          <button type="button" class="pw-toggle" id="pw-toggle" aria-label="비밀번호 보기"><i data-icon="eye" data-size="20"></i></button>
+        </label>
+        <p class="login-error" id="login-error" role="alert" hidden></p>
+        <button type="submit" class="btn-primary login-btn" id="login-submit">로그인</button>
+        <p class="login-foot"><i data-icon="shield-check" data-size="16"></i> 안전한 사내 업무 환경을 위해 사번 인증으로만 로그인할 수 있습니다.</p>
+      </form>
+    </section>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- ───────── 사이드바 ───────── -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">W</div>
+      <div>
+        <div class="brand-name">WorkClone</div>
+        <div class="brand-sub">업무 자동화 플랫폼</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <!-- 업무 자동화 (WorkClone) -->
+      <div class="nav-group">
+        <button class="nav-item active" data-page="home"><i data-icon="home" data-size="17"></i><span>홈</span></button>
+        <button class="nav-item" data-page="create"><i data-icon="plus-circle" data-size="17"></i><span>업무 자동화 만들기</span></button>
+        <button class="nav-item" data-page="my"><i data-icon="layers" data-size="17"></i><span>내 자동화</span></button>
+        <button class="nav-item" data-page="templates"><i data-icon="layout-grid" data-size="17"></i><span>템플릿</span></button>
+        <button class="nav-item" data-page="categories"><i data-icon="shapes" data-size="17"></i><span>업무 분야</span></button>
+        <button class="nav-item" data-page="history"><i data-icon="history" data-size="17"></i><span>실행 이력</span></button>
+      </div>
+      <!-- 업무 지원 (Workmate AI) -->
+      <div class="nav-group">
+        <div class="nav-group-title">업무 지원</div>
+        <button class="nav-item" data-page="briefing"><i data-icon="sun" data-size="17"></i><span>오늘 브리핑</span></button>
+        <button class="nav-item" data-page="meeting"><i data-icon="mic" data-size="17"></i><span>회의 분석</span></button>
+        <button class="nav-item" data-page="search"><i data-icon="file-search" data-size="17"></i><span>회의록 검색</span></button>
+        <button class="nav-item" data-page="weekly"><i data-icon="clipboard-list" data-size="17"></i><span>주간 업무보고</span></button>
+        <button class="nav-item" data-page="mail"><i data-icon="mail" data-size="17"></i><span>업무 메일</span><span class="nav-badge">3</span></button>
+      </div>
+      <div class="nav-group">
+        <button class="nav-item" data-page="team"><i data-icon="users" data-size="17"></i><span>팀 공유</span></button>
+        <button class="nav-item" data-page="settings"><i data-icon="settings" data-size="17"></i><span>설정</span></button>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <!-- ───────── 상단바 ───────── -->
+    <header class="topbar">
+      <label class="search">
+        <i data-icon="search" data-size="16"></i>
+        <input placeholder="업무 자동화, 템플릿, 도움말을 검색하세요." />
+      </label>
+      <div class="topbar-right">
+        <span class="usage-chip" id="usage-chip" hidden title="오늘 AI 사용 횟수 (1인당 하루 한도)"></span>
+        <button class="help-btn"><i data-icon="help-circle" data-size="16"></i> 도움말</button>
+        <button class="icon-btn" id="bell" aria-label="알림 · 업무 메일 3건">
+          <i data-icon="bell" data-size="18"></i><span class="dot"></span>
+        </button>
+        <div class="divider"></div>
+        <div class="profile-wrap">
+          <button class="profile" id="profile-btn" aria-haspopup="menu" aria-expanded="false">
+            <span class="avatar" id="profile-avatar"><i data-icon="user-round" data-size="16"></i></span>
+            <span class="profile-text"><strong id="profile-name">-</strong><small id="profile-team">-</small></span>
+            <i data-icon="chevron-down" data-size="14"></i>
+          </button>
+          <div class="profile-menu" id="profile-menu" role="menu" hidden>
+            <div class="pm-info" id="pm-info"></div>
+            <button type="button" role="menuitem" id="logout-btn"><i data-icon="arrow-left" data-size="14"></i> 로그아웃</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <!-- ───────── 홈 ───────── -->
+      <div class="home" id="page-home">
+
+        <!-- 히어로 (배경: images/hero-bg.webp) -->
+        <section class="hero">
+          <div class="hero-text">
+            <span class="pill"><i data-icon="sparkles" data-size="13"></i> 기업 업무 자동화 AI</span>
+            <h1>한 번만 일하세요. <span class="accent">다음부터는 AI가 대신</span>합니다.</h1>
+            <p>내가 하던 업무를 AI가 학습해, 반복되는 모든 업무를 자동화 프로그램으로 만들어줍니다.</p>
+          </div>
+        </section>
+
+        <!-- 빠르게 업무화 만들기: 작업 파일 + 업무 과정 설명을 한 번에 -->
+        <section class="card quick">
+          <div class="card-head">
+            <div>
+              <h2><i data-icon="zap" data-size="18" data-fill="currentColor" class="ic-green"></i> 빠르게 업무화 만들기</h2>
+              <p class="card-sub">작업 파일을 올리고 평소 처리 과정을 설명해 주세요. AI가 둘을 함께 분석하고, 결과는 승인한 뒤에만 실행됩니다.</p>
+            </div>
+            <!-- 실행 버튼을 제목 줄 오른쪽에 두어 세로 공간을 아낍니다 -->
+            <div class="quick-action">
+              <span class="foot-status" id="quick-status">업무 전 파일과 업무 설명을 입력해 주세요</span>
+              <button class="btn-primary" id="analyze" disabled><i data-icon="wand-sparkles" data-size="15"></i> AI 분석 시작</button>
+            </div>
+          </div>
+
+          <div class="quick-grid">
+            <!-- STEP 1. 작업 파일 -->
+            <div class="q-step">
+              <div class="q-step-head"><span class="q-num">1</span><strong>작업 파일 올리기</strong></div>
+              <div class="slots">
+                <div class="slot" data-slot="before">
+                  <div class="slot-main">
+                    <span class="slot-ic"><i data-icon="file-up" data-size="20"></i></span>
+                    <span class="slot-text">
+                      <strong>업무 전 파일 <em class="req">필수</em></strong>
+                      <small>처리하기 전 원본 자료 (예: 거래 내역.xlsx)</small>
+                      <span class="slot-files"></span>
+                    </span>
+                    <button type="button" class="btn-outline slot-pick"><i data-icon="upload" data-size="14"></i> 선택</button>
+                  </div>
+                  <input type="file" multiple hidden accept=".xlsx,.xls,.csv,.pdf,.docx,.doc,.pptx,.ppt,.txt,.eml,.hwp,.zip" />
+                </div>
+                <div class="slot" data-slot="after">
+                  <div class="slot-main">
+                    <span class="slot-ic after"><i data-icon="file-check-2" data-size="20"></i></span>
+                    <span class="slot-text">
+                      <strong>업무 후 파일 <em class="opt">권장</em></strong>
+                      <small>직접 완성한 결과물 (예: 매출 집계.xlsx)</small>
+                      <span class="slot-files"></span>
+                    </span>
+                    <button type="button" class="btn-outline slot-pick"><i data-icon="upload" data-size="14"></i> 선택</button>
+                  </div>
+                  <input type="file" multiple hidden accept=".xlsx,.xls,.csv,.pdf,.docx,.doc,.pptx,.ppt,.txt,.eml,.hwp,.zip" />
+                </div>
+              </div>
+              <div class="formats">
+                <span class="fmt"><i style="background:#1d7a45"></i>XLSX</span>
+                <span class="fmt"><i style="background:#e2573b"></i>PDF</span>
+                <span class="fmt"><i style="background:#2b62c9"></i>DOCX</span>
+                <span class="fmt"><i style="background:#e08a2b"></i>PPTX</span>
+                <span class="fmt-hint">파일을 칸으로 끌어다 놓아도 됩니다</span>
+              </div>
+            </div>
+
+            <!-- STEP 2. 업무 과정 설명 -->
+            <div class="q-step">
+              <div class="q-step-head">
+                <span class="q-num">2</span><strong>업무 과정 설명하기</strong>
+                <span class="q-count" id="desc-count">0 / 1000</span>
+              </div>
+              <textarea id="desc" maxlength="1000" placeholder="평소 처리 순서를 적어 주세요.&#10;예) 1. 거래처별로 묶기 → 2. 매출 합계 계산 → 3. 보고서 양식에 저장"></textarea>
+              <div class="examples">
+                <span class="ex-label"><i data-icon="lightbulb" data-size="13"></i> 예시로 채우기</span>
+                <button type="button" data-sample="payroll" data-example="11월 급여 정산해줘.&#10;&#10;* 데이터: 11_급여대장_2026-11.csv&#10;* 기준: 급여규정과 수당·공제 기준표&#10;* 계산은 반드시 도구로 하고, 직접 계산하지 마.&#10;* 계산 후 이체 전 점검(사번 중복, 인원 수, 총액 대조)을 해줘.&#10;* 일할 계산, 야근 수당, 성과급처럼 규칙이 적용된 항목은 규정 조항이나 과거 회의록을 검색해서 근거와 함께 표로 정리해줘.&#10;* 근거를 못 찾으면 추측하지 말고 &quot;근거 부족&quot;이라고 써줘.&#10;* 이체 파일은 만들지 마. 내가 승인한다고 말하기 전까지는 대기해.">회계 · 급여 정산</button>
+                <button type="button" data-example="1. SNS 채널 성과 엑셀에서 총 노출수, 클릭수, 클릭률, 광고비를 계산합니다.&#10;2. 회사 PPT 양식의 핵심 지표 칸과 채널별 성과 표를 채웁니다 (노출수 많은 순).&#10;3. 주차별 노출수 차트를 바꾸고 파일 이름은 홍보성과보고_YYYY-MM.pptx로 합니다.">홍보 · 실적 PPT</button>
+                <button type="button" data-example="1. 거래처별 거래명세서 PDF에서 문서번호, 거래일자, 공급자, 품목, 수량, 금액을 뽑습니다.&#10;2. 명세서 맨 아래 합계 줄은 빼고 공급가액+세액으로 합계금액을 계산합니다.&#10;3. 월간 입고내역 엑셀로 정리하고, 거래처별 합계를 다른 시트에 만듭니다.">물류 · 명세서 정리</button>
+                <button type="button" data-example="1. 증명서 신청 목록에서 승인된 재직증명서 신청만 고릅니다.&#10;2. 사번으로 직원 명부를 찾아 성명, 생년월일, 소속, 직위, 입사일을 가져옵니다.&#10;3. 재직증명서 Word 양식에 채워 한 사람당 한 파일씩 만듭니다 (날짜는 2026년 11월 26일 형식).">인사 · 재직증명서</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 업무 분야 -->
+        <section class="cats">
+          <div class="section-head">
+            <h2><i data-icon="layout-grid" data-size="18" class="ic-green"></i> 자동화할 업무 분야를 선택하세요 <i data-icon="info" data-size="14" class="muted"></i></h2>
+            <a class="link" href="#">업무 분야 자세히 보기 <i data-icon="arrow-right" data-size="14"></i></a>
+          </div>
+          <div class="cat-grid">
+            <button class="cat cat-data">
+              <span class="cat-ic"><i data-icon="file-spreadsheet" data-size="20"></i></span>
+              <span class="cat-body"><strong>데이터·엑셀 처리</strong><small>집계, 가공, 분석, 리포트</small></span>
+              <i data-icon="chevron-right" data-size="16" class="cat-arrow"></i>
+              <span class="cat-art"><svg viewBox="0 0 60 36"><g fill="currentColor"><rect x="6" y="24" width="7" height="10" rx="1.5" opacity=".45"/><rect x="17" y="18" width="7" height="16" rx="1.5" opacity=".6"/><rect x="28" y="12" width="7" height="22" rx="1.5" opacity=".8"/><rect x="39" y="5" width="7" height="29" rx="1.5"/></g></svg></span>
+            </button>
+            <button class="cat cat-doc">
+              <span class="cat-ic"><i data-icon="file-text" data-size="20"></i></span>
+              <span class="cat-body"><strong>문서 작성·변환</strong><small>양식 작성, 문서 변환(PDF·Word)</small></span>
+              <i data-icon="chevron-right" data-size="16" class="cat-arrow"></i>
+              <span class="cat-art"><svg viewBox="0 0 60 36"><rect x="22" y="2" width="28" height="34" rx="3" fill="currentColor" opacity=".25"/><rect x="14" y="8" width="28" height="30" rx="3" fill="#fff" stroke="currentColor" stroke-opacity=".4"/><rect x="19" y="15" width="16" height="2.5" rx="1" fill="currentColor" opacity=".6"/><rect x="19" y="21" width="12" height="2.5" rx="1" fill="currentColor" opacity=".4"/><rect x="19" y="27" width="14" height="2.5" rx="1" fill="currentColor" opacity=".4"/></svg></span>
+            </button>
+            <button class="cat cat-file">
+              <span class="cat-ic"><i data-icon="folder" data-size="20"></i></span>
+              <span class="cat-body"><strong>파일·폴더 관리</strong><small>자동 분류, 파일명 변경, 정리</small></span>
+              <i data-icon="chevron-right" data-size="16" class="cat-arrow"></i>
+              <span class="cat-art"><svg viewBox="0 0 60 36"><path d="M10 8a3 3 0 0 1 3-3h11l4 4h19a3 3 0 0 1 3 3v24H10z" fill="currentColor" opacity=".45"/><rect x="10" y="14" width="40" height="22" rx="3" fill="currentColor" opacity=".75"/></svg></span>
+            </button>
+            <button class="cat cat-email">
+              <span class="cat-ic"><i data-icon="mail" data-size="20"></i></span>
+              <span class="cat-body"><strong>이메일 업무</strong><small>답변 작성, 첨부파일 저장, 주문 추출</small></span>
+              <i data-icon="chevron-right" data-size="16" class="cat-arrow"></i>
+              <span class="cat-art"><svg viewBox="0 0 60 36"><rect x="10" y="6" width="40" height="30" rx="3" fill="currentColor" opacity=".6"/><path d="M10 8l20 15 20-15" stroke="#fff" stroke-width="2.5" fill="none"/></svg></span>
+            </button>
+            <button class="cat cat-report">
+              <span class="cat-ic"><i data-icon="presentation" data-size="20"></i></span>
+              <span class="cat-body"><strong>보고·발표자료</strong><small>정기 보고서, 그래프, PPT 생성</small></span>
+              <i data-icon="chevron-right" data-size="16" class="cat-arrow"></i>
+              <span class="cat-art"><svg viewBox="0 0 60 36"><rect x="10" y="4" width="40" height="32" rx="3" fill="#fff" stroke="currentColor" stroke-opacity=".45"/><path d="M15 28l9-8 6 5 10-11 6 4" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </button>
+            <button class="cat cat-program">
+              <span class="cat-ic"><i data-icon="monitor-cog" data-size="20"></i></span>
+              <span class="cat-body"><strong>업무 프로그램 조작</strong><small>ERP, 그룹웨어 등 반복 입력</small></span>
+              <i data-icon="chevron-right" data-size="16" class="cat-arrow"></i>
+              <span class="cat-art"><svg viewBox="0 0 60 36"><rect x="8" y="4" width="44" height="32" rx="3" fill="#fff" stroke="currentColor" stroke-opacity=".45"/><rect x="8" y="4" width="44" height="7" rx="3" fill="currentColor" opacity=".35"/><rect x="14" y="16" width="14" height="3" rx="1" fill="currentColor" opacity=".5"/><rect x="14" y="23" width="24" height="3" rx="1" fill="currentColor" opacity=".35"/><rect x="34" y="15" width="12" height="5" rx="1.5" fill="currentColor" opacity=".6"/></svg></span>
+            </button>
+          </div>
+        </section>
+
+        <div class="bottom-grid">
+          <!-- 추천 템플릿 -->
+          <section class="card panel">
+            <div class="panel-head">
+              <h3><i data-icon="layers" data-size="16" class="ic-green"></i> 추천 템플릿</h3>
+              <a class="link sm" href="#">전체보기 <i data-icon="arrow-right" data-size="13"></i></a>
+            </div>
+            <ul class="tpl-list">
+              <li class="sk-row"><span class="sk sk-ic"></span><span class="sk sk-line"></span></li>
+              <li class="sk-row"><span class="sk sk-ic"></span><span class="sk sk-line"></span></li>
+              <li class="sk-row"><span class="sk sk-ic"></span><span class="sk sk-line"></span></li>
+              <li class="sk-row"><span class="sk sk-ic"></span><span class="sk sk-line"></span></li>
+            </ul>
+          </section>
+
+          <!-- 내 자동화 현황 -->
+          <section class="card panel">
+            <div class="panel-head">
+              <h3><i data-icon="bar-chart-3" data-size="16" class="ic-green"></i> 내 자동화 현황</h3>
+              <select class="period" id="period">
+                <option value="7">최근 7일</option>
+                <option value="30" selected>최근 30일</option>
+                <option value="90">최근 90일</option>
+              </select>
+            </div>
+            <div class="kpis">
+              <div class="kpi k-green"><i data-icon="layers" data-size="18"></i><div><small>등록된 자동화</small><strong>–</strong></div></div>
+              <div class="kpi k-blue"><i data-icon="play-circle" data-size="18"></i><div><small>총 실행 횟수</small><strong>–</strong></div></div>
+              <div class="kpi k-purple"><i data-icon="shield-check" data-size="18"></i><div><small>성공률</small><strong>–</strong></div></div>
+            </div>
+            <!-- 그래프는 js/app.js 의 TREND 데이터로 그려집니다 -->
+            <div class="chart-box"><svg class="line-chart" id="trend-chart" role="img" aria-label="최근 실행 추이"></svg></div>
+          </section>
+
+          <!-- 최근 실행 내역 -->
+          <section class="card panel">
+            <div class="panel-head">
+              <h3><i data-icon="clock" data-size="16" class="ic-green"></i> 최근 실행 내역</h3>
+              <a class="link sm" href="#">전체보기 <i data-icon="arrow-right" data-size="13"></i></a>
+            </div>
+            <ul class="run-list">
+              <li class="sk-row"><span class="sk sk-dot"></span><span class="sk sk-line"></span></li>
+              <li class="sk-row"><span class="sk sk-dot"></span><span class="sk sk-line"></span></li>
+              <li class="sk-row"><span class="sk sk-dot"></span><span class="sk sk-line"></span></li>
+              <li class="sk-row"><span class="sk sk-dot"></span><span class="sk sk-line"></span></li>
+            </ul>
+          </section>
+        </div>
+      </div>
+
+      <!-- ───────── 에이전트 작업 화면 (AI 분석 시작 후) ───────── -->
+      <div class="run" id="page-run" hidden>
+        <div class="run-head">
+          <button type="button" class="btn-ghost" id="run-back"><i data-icon="arrow-left" data-size="15"></i> 홈으로</button>
+          <span class="dept-chip"><i data-icon="calculator" data-size="13"></i> 회계팀</span>
+          <strong class="run-name">급여 정산 에이전트</strong>
+          <span class="mode-badge" id="run-mode"></span>
+          <div class="run-files" id="run-files"></div>
+        </div>
+
+        <div class="run-grid">
+          <!-- 왼쪽: 대화 + 도구 호출 과정 -->
+          <section class="card run-chat">
+            <div class="panel-head">
+              <h3><i data-icon="wrench" data-size="16" class="ic-green"></i> AI 작업 과정</h3>
+              <span class="run-status" id="run-status"></span>
+            </div>
+            <div class="chat-log" id="chat-log" aria-live="polite"></div>
+            <form class="chat-input" id="chat-form">
+              <textarea id="chat-text" rows="1" autocomplete="off" placeholder="결과를 보고 다시 물어보세요 (Shift+Enter 줄바꿈)"></textarea>
+              <button type="submit" class="btn-primary sm" aria-label="보내기"><i data-icon="send" data-size="15"></i></button>
+            </form>
+          </section>
+
+          <!-- 오른쪽: 결과 -->
+          <section class="card run-result">
+            <div class="kpi-strip">
+              <div><small>대상 인원</small><strong id="kpi-count">-</strong></div>
+              <div><small>지급 총액</small><strong id="kpi-gross">-</strong></div>
+              <div><small>공제 합계</small><strong id="kpi-ded">-</strong></div>
+              <div><small>실수령 합계</small><strong id="kpi-net">-</strong></div>
+              <div><small>점검</small><strong id="kpi-check">-</strong></div>
+            </div>
+
+            <div class="tabs" role="tablist">
+              <button role="tab" class="on" data-tab="calc"><i data-icon="table" data-size="15"></i> 급여 계산 <em id="cnt-calc"></em></button>
+              <button role="tab" data-tab="check"><i data-icon="list-checks" data-size="15"></i> 이체 전 점검 <em id="cnt-check"></em></button>
+              <button role="tab" data-tab="review"><i data-icon="scale" data-size="15"></i> 근거 대조표 <em id="cnt-review"></em></button>
+              <button role="tab" data-tab="files"><i data-icon="file-down" data-size="15"></i> 파일 <em id="cnt-files"></em></button>
+            </div>
+            <div class="tab-body">
+              <div class="tab-pane" data-pane="calc"><div class="empty">AI가 급여를 계산하면 여기에 표시됩니다.</div></div>
+              <div class="tab-pane" data-pane="check" hidden><div class="empty">이체 전 점검 결과가 여기에 표시됩니다.</div></div>
+              <div class="tab-pane" data-pane="review" hidden><div class="empty">규칙이 적용된 항목과 근거 문서가 여기에 표시됩니다.</div></div>
+              <div class="tab-pane" data-pane="files" hidden><div class="empty">만들어진 파일이 여기에 표시됩니다.</div></div>
+            </div>
+
+            <!-- 급여규정 제14조 3단계 승인: 승인 전에는 이체 파일이 만들어지지 않습니다 -->
+            <div class="approval-bar" id="approval-bar">
+              <span class="ap-title"><i data-icon="lock" data-size="15"></i> 이체 승인</span>
+              <button type="button" class="ap-step" data-role="담당자" disabled><span>1</span> 담당자 확인</button>
+              <button type="button" class="ap-step" data-role="부장" disabled><span>2</span> 부장 검토</button>
+              <button type="button" class="ap-step" data-role="대표" disabled><span>3</span> 대표 승인</button>
+              <button type="button" class="btn-primary sm" id="ap-transfer" disabled><i data-icon="download" data-size="14"></i> 이체 파일 만들기</button>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- ───────── 업무 자동화 만들기 작업 화면 (업무 예시 → AI 레시피 → 검증 → 저장) ───────── -->
+      <div class="run build" id="page-build" hidden>
+        <div class="run-head">
+          <button type="button" class="btn-ghost" data-go="home"><i data-icon="arrow-left" data-size="15"></i> 홈으로</button>
+          <span class="dept-chip"><i data-icon="wand-sparkles" data-size="13"></i> 자동화 만들기</span>
+          <strong class="run-name" id="b-title">새 자동화</strong>
+          <span class="mode-badge" id="b-mode"></span>
+          <div class="run-files" id="b-files"></div>
+        </div>
+        <div class="run-grid">
+          <section class="card run-chat">
+            <div class="panel-head">
+              <h3><i data-icon="wrench" data-size="16" class="ic-green"></i> AI 작업 과정</h3>
+              <span class="run-status" id="b-status"></span>
+            </div>
+            <div class="chat-log" id="b-log" aria-live="polite"></div>
+            <div class="chat-attach" id="b-attach" hidden></div>
+            <form class="chat-input" id="b-form">
+              <button type="button" class="chat-clip" id="b-clip" aria-label="파일 첨부" title="파일 첨부 (대화 중에 업무 전·후 파일 추가)"><i data-icon="paperclip" data-size="17"></i></button>
+              <input type="file" id="b-file" multiple hidden accept=".xlsx,.xlsm,.csv,.pdf,.docx,.pptx,.md,.txt" />
+              <textarea id="b-text" rows="1" autocomplete="off" placeholder="추가 설명이나 수정 요청 (Shift+Enter 줄바꿈)"></textarea>
+              <button type="submit" class="btn-primary sm" aria-label="보내기"><i data-icon="send" data-size="15"></i></button>
+            </form>
+          </section>
+
+          <section class="card run-result">
+            <div class="verify-strip">
+              <div class="vs-rate"><small>업무 후 파일과 일치율</small><strong id="b-match">-</strong></div>
+              <div class="vs-text" id="b-verdict">AI가 레시피를 만들고 업무 후 파일과 셀 단위로 비교합니다.</div>
+            </div>
+            <div class="tabs" role="tablist">
+              <button role="tab" class="on" data-btab="steps"><i data-icon="list-checks" data-size="15"></i> 처리 단계 <em id="b-cnt-steps"></em></button>
+              <button role="tab" data-btab="verify"><i data-icon="scale" data-size="15"></i> 검증 결과</button>
+              <button role="tab" data-btab="preview"><i data-icon="table" data-size="15"></i> 결과 미리보기</button>
+            </div>
+            <div class="tab-body">
+              <div class="tab-pane" data-bpane="steps"><div class="empty">AI가 만든 처리 단계가 여기에 표시됩니다.</div></div>
+              <div class="tab-pane" data-bpane="verify" hidden><div class="empty">업무 후 파일과 비교한 결과가 여기에 표시됩니다.</div></div>
+              <div class="tab-pane" data-bpane="preview" hidden><div class="empty">레시피로 만든 결과 표가 여기에 표시됩니다.</div></div>
+            </div>
+            <!-- 사용자 승인: 검증된 레시피를 '내 자동화'로 저장 -->
+            <div class="approval-bar">
+              <span class="ap-title"><i data-icon="user-check" data-size="15"></i> 승인</span>
+              <input class="save-name" id="b-name" placeholder="자동화 이름" disabled />
+              <span class="save-hint" id="b-save-hint">AI가 검증을 마치면 저장할 수 있습니다</span>
+              <button type="button" class="btn-primary sm" id="b-save" disabled><i data-icon="check" data-size="14"></i> 확인하고 저장</button>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- ───────── 내 자동화 ───────── -->
+      <div class="mypage" id="page-my" hidden>
+        <div class="run-head">
+          <strong class="run-name">내 자동화</strong>
+          <span class="mode-badge" id="my-count"></span>
+          <button type="button" class="btn-primary sm" data-go="create" style="margin-left:auto"><i data-icon="plus-circle" data-size="14"></i> 새 자동화 만들기</button>
+        </div>
+        <div class="my-grid">
+          <section class="card my-list-card">
+            <ul class="my-list" id="my-list"><li class="empty">불러오는 중…</li></ul>
+          </section>
+          <section class="card my-detail" id="my-detail">
+            <div class="empty">왼쪽에서 자동화를 고르세요.</div>
+          </section>
+        </div>
+      </div>
+
+      <!-- ───────── 실행 이력 ───────── -->
+      <div class="mypage" id="page-history" hidden>
+        <div class="run-head">
+          <strong class="run-name">실행 이력</strong>
+          <span class="mode-badge" id="hist-count"></span>
+        </div>
+        <section class="card hist-card">
+          <div class="tbl-wrap"><table class="tbl">
+            <thead><tr><th>실행 시각</th><th>자동화</th><th>실행한 사람</th><th>입력 파일</th><th>결과</th><th class="num">행 수</th><th>파일</th></tr></thead>
+            <tbody id="hist-body"><tr><td colspan="7" class="empty-cell">불러오는 중…</td></tr></tbody>
+          </table></div>
+        </section>
+      </div>
+
+      <!-- ───────── 준비 중 화면 (홈 외 메뉴) ───────── -->
+      <div class="placeholder" id="page-placeholder" hidden>
+        <i data-icon="construction" data-size="36"></i>
+        <h2 id="placeholder-title"></h2>
+        <p>이 화면은 다음 단계에서 만들 예정입니다.</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- ───────── AI 어시스턴트 ───────── -->
+  <div class="assistant" id="assistant" role="dialog" aria-label="AI 어시스턴트" hidden>
+    <div class="as-head">
+      <span class="as-avatar"><i data-icon="bot" data-size="16"></i></span>
+      <strong>AI 어시스턴트</strong>
+      <button class="icon-btn" id="assistant-close" aria-label="닫기"><i data-icon="x" data-size="16"></i></button>
+    </div>
+    <div class="as-body" id="as-body">
+      <div class="bubble ai">안녕하세요! 자동화 실행, 브리핑, 회의록 검색 등 필요한 일을 말씀해 주세요.</div>
+      <div class="as-sugs" id="as-sugs">
+        <button>오늘 브리핑 보여줘</button>
+        <button>지난 회의에서 뭐로 정했지?</button>
+        <button>이번 주 업무보고 만들어줘</button>
+        <button>매출 집계 자동화 실행</button>
+      </div>
+    </div>
+    <form class="as-input" id="as-form">
+      <input id="as-input" placeholder="무엇을 도와드릴까요?" autocomplete="off" />
+      <button type="submit" aria-label="보내기" disabled><i data-icon="send" data-size="15"></i></button>
+    </form>
+  </div>
+  <button class="fab" id="fab" aria-label="AI 어시스턴트 열기"><i data-icon="bot" data-size="20"></i> <span>AI 어시스턴트</span></button>
+</div>
+</body>
+</html>

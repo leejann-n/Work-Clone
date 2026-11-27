@@ -1,0 +1,40 @@
+/* 업무 메일 화면 전용 */
+#page-mail .ml-actions { margin-left: auto; display: flex; gap: 8px; }
+#page-mail .btn-ghost.sm { height: 32px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-2); }
+#page-mail .btn-ghost.sm:hover { border-color: var(--green-500); color: var(--green-700); }
+#page-mail .ml-grid { grid-template-columns: minmax(280px, 400px) minmax(0, 1fr); }
+#page-mail .ml-side { display: flex; flex-direction: column; gap: 10px; padding: 12px; }
+#page-mail .ml-tabs { display: flex; gap: 4px; background: #f3f5f7; padding: 3px; border-radius: 10px; }
+#page-mail .ml-tabs button { flex: 1; height: 32px; border-radius: 8px; font-size: 13px; color: var(--ink-2); }
+#page-mail .ml-tabs button.on { background: #fff; color: var(--ink); font-weight: 700; box-shadow: 0 1px 3px rgba(16, 24, 40, .08); }
+#page-mail .ml-list { list-style: none; margin: 0; padding: 0; overflow: auto; display: flex; flex-direction: column; gap: 4px; }
+#page-mail .ml-list li[data-id] { padding: 10px 12px; border-radius: 10px; cursor: pointer; border: 1px solid transparent; }
+#page-mail .ml-list li[data-id]:hover { background: #f6f8fa; }
+#page-mail .ml-list li.on { background: var(--green-50); border-color: var(--green-500); }
+#page-mail .ml-list .ml-from { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); }
+#page-mail .ml-list .ml-subj { margin-top: 3px; font-size: 14px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#page-mail .ml-list li.unread .ml-subj { font-weight: 700; color: var(--ink); }
+#page-mail .ml-list li.unread .ml-from b::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: var(--green-600); vertical-align: 1px; }
+#page-mail .ml-tag { display: inline-block; padding: 1px 7px; border-radius: 10px; background: #eef2ff; color: #3b4fa3; font-size: 11px; margin-left: 4px; }
+#page-mail .ml-tag.run { background: var(--green-50); color: var(--green-700); }
+#page-mail .ml-main { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+#page-mail .ml-empty { margin: auto; text-align: center; line-height: 1.8; }
+#page-mail .ml-head h3 { margin: 0 0 6px; font-size: 19px; }
+#page-mail .ml-meta { font-size: 13px; color: var(--muted); }
+#page-mail .ml-body { white-space: pre-wrap; font-size: 14px; line-height: 1.7; padding: 14px 0; border-top: 1px solid #eef1f4; border-bottom: 1px solid #eef1f4; }
+#page-mail .ml-files { display: flex; flex-wrap: wrap; gap: 6px; }
+#page-mail .ml-files a { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px; color: var(--ink-2); text-decoration: none; }
+#page-mail .ml-files a:hover { border-color: var(--green-500); color: var(--green-700); }
+#page-mail .ml-box { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; background: #fbfcfd; }
+#page-mail .ml-box h4 { margin: 0 0 8px; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+#page-mail .ml-box p { margin: 6px 0; font-size: 13px; color: var(--ink-2); }
+#page-mail .ml-cand { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: #fff; border: 1px solid var(--line); border-radius: 10px; margin-top: 6px; font-size: 13px; }
+#page-mail .ml-cand b { flex: 1; }
+#page-mail .ml-cand small { color: var(--muted); }
+#page-mail .ml-result { margin-top: 10px; }
+#page-mail .ml-result a { margin-right: 8px; }
+#page-mail .ml-form { display: flex; flex-direction: column; gap: 10px; }
+#page-mail .ml-form select { width: 100%; height: 40px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px; background: #fff; font: inherit; font-size: 14px; }
+#page-mail .ml-form textarea { min-height: 220px; }
+#page-mail .ml-ok { color: var(--green-700); font-size: 13px; }
+@media (max-width: 900px) { #page-mail .ml-grid { grid-template-columns: 1fr; } #page-mail .ml-actions { flex-wrap: wrap; } }

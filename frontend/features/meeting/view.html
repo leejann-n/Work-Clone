@@ -1,0 +1,21 @@
+<!-- 회의 분석 화면 (담당: 팀원 1) — 이 폴더(view.html · view.css · view.js)만 고치면 됩니다 -->
+<div class="run-head">
+  <strong class="run-name">회의 분석</strong>
+  <span class="mode-badge">담당: 팀원 1</span>
+</div>
+<div class="fp-body">
+  <p class="fp-todo"><b>시작점입니다.</b> 회의록 목록 · 상세 · 글 붙여 넣어 분석까지 동작합니다. 파일 올리기, 할 일 완료 체크, 디자인을 이어서 만들어 주세요.</p>
+  <div class="fp-grid">
+    <section class="card">
+      <ul class="fp-list" data-el="list"><li class="empty">불러오는 중…</li></ul>
+    </section>
+    <section class="card" data-el="detail">
+      <h3 style="margin-top:0">새 회의록 분석</h3>
+      <div class="fp-row"><input type="text" data-el="title" placeholder="회의 제목" /><input type="date" data-el="date" style="max-width:170px" /></div>
+      <input type="text" data-el="people" placeholder="참석자 (쉼표로 구분)" style="margin-top:8px" />
+      <textarea data-el="text" placeholder="회의록 내용을 붙여 넣으세요" style="margin-top:8px"></textarea>
+      <div class="fp-row" style="margin-top:8px"><button class="btn-primary sm" data-el="go">AI로 분석하고 저장</button><span class="fp-error" data-el="err"></span></div>
+      <div data-el="result" style="margin-top:14px"></div>
+    </section>
+  </div>
+</div>
